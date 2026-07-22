@@ -1,0 +1,6 @@
+Big	2
+Data	2
+Hadoop	3
+Hello	3
+MapReduce	2
+Python	2
