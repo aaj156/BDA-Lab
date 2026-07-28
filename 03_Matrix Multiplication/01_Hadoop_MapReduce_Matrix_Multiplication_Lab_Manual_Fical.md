@@ -1,5 +1,5 @@
 
-# 03. Hadoop MapReduce Matrix Multiplication Laboratory Manual (Version 2)
+# 03. Hadoop MapReduce Matrix Multiplication Laboratory Manual 
 
 > **Course:** Big Data Analytics / Data Engineering  
 > **Experiment:** Matrix Multiplication using Hadoop MapReduce
