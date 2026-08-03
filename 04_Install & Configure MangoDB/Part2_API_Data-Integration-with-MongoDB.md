@@ -1,6 +1,6 @@
 Part 2 Complete Laboratory Manual
 
-## Industry-Grade ETL Pipeline using REST API, Python and MongoDB
+## Industry-Grade MongoDB database storage through ETL Pipeline using REST API, Python.
 
 **Subject:** Big Data Analytics LAB
 # Objectives
