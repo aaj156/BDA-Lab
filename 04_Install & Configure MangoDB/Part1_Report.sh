@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Data Engineering Laboratory Auto Report Generator
+# BDA Laboratory Auto Report Generator
 # Experiment 04 - Part 1 & Part 2
 set -e
 
@@ -7,7 +7,7 @@ REPORT_ROOT="reports"
 DATE=$(date +"%Y%m%d_%H%M%S")
 
 echo "========================================="
-echo " DATA ENGINEERING LAB AUTO REPORT"
+echo " BDA LAB AUTO REPORT"
 echo "========================================="
 
 read -p "Student Name        : " STUDENT
