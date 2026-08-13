@@ -330,6 +330,185 @@ Verify
 db.students.find()
 ```
 
+# 📘 MongoDB Compass Setup & Configuration Guide
+
+## 🎯 Objective
+
+This guide provides step-by-step instructions to **download, install, configure, and connect MongoDB Compass** to visualize data stored in your MongoDB database accessed via CLI.
+
+---
+
+# 🔷 1. What is MongoDB Compass?
+
+MongoDB Compass is the official GUI tool for MongoDB that allows you to:
+
+* Visualize data
+* Run queries without CLI
+* Analyze schema
+* Perform aggregation
+
+---
+
+# 🔷 2. Download MongoDB Compass
+
+### 📥 Official Website:
+
+https://www.mongodb.com/try/download/compass
+
+### Steps:
+
+1. Select:
+
+   * Version: Latest Stable
+   * OS: Windows / Ubuntu / Mac
+2. Click **Download**
+
+---
+
+# 🔷 3. Install MongoDB Compass
+
+## 🪟 Windows Installation
+
+1. Open downloaded `.exe` file
+2. Click:
+
+   * Next → Install → Finish
+
+---
+
+## 🐧 Ubuntu / Linux Installation
+
+```bash
+wget https://downloads.mongodb.com/compass/mongodb-compass_1.43.6_amd64.deb
+sudo dpkg -i mongodb-compass_1.43.6_amd64.deb
+sudo apt-get install -f
+```
+
+---
+
+# 🔷 4. Start MongoDB Server
+
+Before connecting, ensure MongoDB is running.
+
+```bash
+sudo systemctl start mongod
+```
+
+Check status:
+
+```bash
+sudo systemctl status mongod
+```
+
+---
+
+# 🔷 5. Get Connection String from CLI
+
+Start MongoDB shell:
+
+```bash
+mongosh
+```
+
+Default connection string:
+
+```
+mongodb://localhost:27017
+```
+
+---
+
+# 🔷 6. Connect MongoDB Compass to Database
+
+### Steps:
+
+1. Open MongoDB Compass
+2. Paste connection string:
+
+```
+mongodb://localhost:27017
+```
+
+3. Click **Connect**
+
+---
+
+# 🔷 7. Visualize Your Data
+
+After connecting, you can:
+
+* View Databases
+* Browse Collections
+* Inspect Documents (JSON format)
+
+---
+
+# 🔷 8. Features of MongoDB Compass
+
+## ✅ 1. View Documents
+
+Filter example:
+
+```json
+{ "name": "Akshay" }
+```
+
+---
+
+## ✅ 2. Schema Analysis
+
+* Field types
+* Data distribution
+
+---
+
+## ✅ 3. Aggregation Pipeline
+
+* Build pipelines visually without coding
+
+---
+
+## ✅ 4. Insert / Update Data
+
+* Perform CRUD operations using GUI
+
+---
+
+# 🔷 9. Troubleshooting
+
+## ❌ Connection Refused
+
+```bash
+sudo systemctl start mongod
+```
+
+---
+
+## ❌ Port Issue
+
+```bash
+netstat -tulnp | grep 27017
+```
+
+---
+
+## ❌ Authentication Error
+
+```
+mongodb://username:password@localhost:27017
+```
+# 🔷 10. Connect Remote MongoDB
+
+```
+mongodb://<ip-address>:27017
+```
+
+### Ensure:
+
+* Port 27017 is open
+* Firewall allows access
+
+
 ## Drop Collection
 
 ``` javascript
