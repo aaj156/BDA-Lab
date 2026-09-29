@@ -1,0 +1,388 @@
+# 🧪 **BDA LAB: Advanced EDA using PySpark (Ecommerce Sales Dataset)**
+
+---
+
+## 🎯 **1. Objective**
+
+To perform **end-to-end Exploratory Data Analysis (EDA)** on a **real-world ecommerce dataset** using PySpark including:
+
+* Multi-table joins
+* Data cleaning
+* Feature engineering
+* Advanced transformations
+* Window functions
+* Benchmarking
+
+---
+
+## 📂 **2. Dataset Overview**
+
+Dataset contains:
+
+* Orders (~51K rows)
+* Customers (~9K rows)
+* Products (~1.9K rows)
+* Payments
+* Shipping
+* Returns
+
+Key columns:
+
+* order_id, customer_id, product_id
+* quantity, unit_price, discount
+* sales, profit, payment_method, ship_mode
+
+---
+
+## ⚙️ **3. Environment Setup**
+
+```bash
+pip install pyspark pandas matplotlib seaborn
+```
+
+```python
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder \
+    .appName("Ecommerce_EDA") \
+    .getOrCreate()
+```
+
+---
+
+# 📥 **4. Load All Tables**
+
+```python
+orders = spark.read.csv("Orders.csv", header=True, inferSchema=True)
+customers = spark.read.csv("Customers.csv", header=True, inferSchema=True)
+products = spark.read.csv("Products.csv", header=True, inferSchema=True)
+payments = spark.read.csv("Payments.csv", header=True, inferSchema=True)
+returns = spark.read.csv("Returns.csv", header=True, inferSchema=True)
+```
+
+---
+
+# 🔍 **5. Basic Exploration**
+
+```python
+orders.printSchema()
+orders.describe().show()
+
+orders.select("order_status").distinct().show()
+```
+
+---
+
+# 🧹 **6. Data Cleaning**
+
+## Remove Nulls
+
+```python
+orders = orders.dropna()
+```
+
+## Remove Duplicates
+
+```python
+orders = orders.dropDuplicates()
+```
+
+## Filter Invalid Data
+
+```python
+orders = orders.filter(orders.quantity > 0)
+orders = orders.filter(orders.unit_price > 0)
+```
+
+---
+
+# 🔗 **7. Data Integration (JOINS)**
+
+## Join Orders + Customers
+
+```python
+df = orders.join(customers, "customer_id", "inner")
+```
+
+## Join Products
+
+```python
+df = df.join(products, "product_id", "inner")
+```
+
+## Join Payments
+
+```python
+df = df.join(payments, "order_id", "left")
+```
+
+## Join Returns
+
+```python
+df = df.join(returns, "order_id", "left")
+```
+
+---
+
+# 🔄 **8. Feature Engineering**
+
+## Total Revenue (if not present)
+
+```python
+from pyspark.sql.functions import col
+
+df = df.withColumn("revenue",
+    col("quantity") * col("unit_price") * (1 - col("discount"))
+)
+```
+
+---
+
+## Profit Margin
+
+```python
+df = df.withColumn("profit_margin",
+    col("profit") / col("revenue")
+)
+```
+
+---
+
+## Extract Time Features
+
+```python
+from pyspark.sql.functions import to_date, month, year
+
+df = df.withColumn("order_date", to_date("order_date"))
+df = df.withColumn("month", month("order_date"))
+df = df.withColumn("year", year("order_date"))
+```
+
+---
+
+# 📊 **9. Advanced Transformations**
+
+## 1. GroupBy Aggregation
+
+```python
+df.groupBy("category").sum("revenue").show()
+```
+
+---
+
+## 2. Multi Aggregation
+
+```python
+from pyspark.sql.functions import avg, max, min
+
+df.groupBy("category").agg(
+    avg("revenue"),
+    max("revenue"),
+    min("revenue")
+).show()
+```
+
+---
+
+## 3. Pivot Table
+
+```python
+df.groupBy("category").pivot("payment_method").sum("revenue").show()
+```
+
+---
+
+## 4. Conditional Column
+
+```python
+from pyspark.sql.functions import when
+
+df = df.withColumn("order_flag",
+    when(col("revenue") > 5000, "High")
+    .otherwise("Low")
+)
+```
+
+---
+
+## 5. Filtering
+
+```python
+df.filter(df.order_status == "Returned").show()
+```
+
+---
+
+# 🧠 **10. Window Functions (Advanced)**
+
+```python
+from pyspark.sql.window import Window
+from pyspark.sql.functions import rank
+
+windowSpec = Window.partitionBy("customer_id").orderBy(col("revenue").desc())
+
+df = df.withColumn("rank", rank().over(windowSpec))
+```
+
+---
+
+## Top Orders per Customer
+
+```python
+df.filter(df.rank == 1).show()
+```
+
+---
+
+# 📈 **11. Business Insights Queries**
+
+## Top Customers
+
+```python
+df.groupBy("customer_id").sum("revenue") \
+  .orderBy("sum(revenue)", ascending=False).show(10)
+```
+
+---
+
+## Monthly Sales Trend
+
+```python
+df.groupBy("year", "month").sum("revenue").show()
+```
+
+---
+
+## Return Rate
+
+```python
+df.filter(df.return_reason.isNotNull()).count() / df.count()
+```
+
+---
+
+## Best Selling Products
+
+```python
+df.groupBy("product_name").sum("quantity") \
+  .orderBy("sum(quantity)", ascending=False).show(10)
+```
+
+---
+
+# 📉 **12. Outlier Detection**
+
+```python
+quantiles = df.approxQuantile("revenue", [0.25, 0.75], 0)
+Q1, Q3 = quantiles
+IQR = Q3 - Q1
+
+df_outliers = df.filter((col("revenue") < Q1 - 1.5*IQR) |
+                        (col("revenue") > Q3 + 1.5*IQR))
+```
+
+---
+
+# 🎨 **13. Visualization**
+
+```python
+pdf = df.toPandas()
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+sns.barplot(x="category", y="revenue", data=pdf)
+plt.show()
+```
+
+---
+
+# ⚡ **14. Performance Optimization**
+
+## Cache
+
+```python
+df.cache()
+```
+
+## Repartition
+
+```python
+df = df.repartition(8)
+```
+
+---
+
+# ⏱️ **15. Benchmarking**
+
+```python
+import time
+
+start = time.time()
+df.groupBy("category").sum("revenue").show()
+print("Execution Time:", time.time() - start)
+```
+
+---
+
+## Compare Operations
+
+```python
+start = time.time()
+df.count()
+print("Count:", time.time() - start)
+
+start = time.time()
+df.collect()
+print("Collect:", time.time() - start)
+```
+
+---
+
+# 📊 **16. Expected Insights**
+
+* Top revenue categories
+* High-value customers
+* Monthly sales trends
+* Return patterns
+* Profitability analysis
+
+---
+
+# 🧪 **17. Student Tasks**
+
+1. Find top 5 profitable products
+2. Identify high return categories
+3. Perform customer segmentation
+4. Compare revenue across payment methods
+5. Benchmark caching vs non-caching
+
+---
+
+# 🚀 **18. Mini Project**
+
+### Title:
+
+**Ecommerce Sales Analytics using PySpark**
+
+### Deliverables:
+
+* Code
+* Graphs
+* Insights report
+* Benchmark results
+
+---
+
+# 📌 **19. Conclusion**
+
+This experiment demonstrates:
+
+* Real-world multi-table EDA
+* Advanced Spark transformations
+* Performance optimization
+* Business intelligence extraction
+
+---
+
+# ✅ **END OF LAB**
