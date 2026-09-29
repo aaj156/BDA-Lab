@@ -1,0 +1,311 @@
+# 🧪 **BDA LAB: Exploratory Data Analysis using PySpark (Complete Lab Manual)**
+
+---
+
+## 🎯 **1. Objective**
+
+To perform **Exploratory Data Analysis (EDA)** using **PySpark** on a structured dataset and evaluate performance using **basic benchmarking techniques**.
+
+---
+
+## 🧠 **2. Learning Outcomes**
+
+After completing this experiment, students will be able to:
+
+* Understand PySpark DataFrame operations
+* Perform data cleaning and transformation
+* Apply aggregation and statistical analysis
+* Visualize data insights
+* Benchmark execution performance in Spark
+
+---
+
+## 🧰 **3. Tools & Technologies**
+
+* Python 3.x
+* Apache Spark (PySpark)
+* Jupyter Notebook / VS Code
+* Libraries: pyspark, pandas, matplotlib
+
+---
+
+## ⚙️ **4. Environment Setup**
+
+### Step 1: Install Java
+
+```bash
+java -version
+```
+
+If not installed:
+
+```bash
+sudo apt install openjdk-11-jdk -y
+```
+
+---
+
+### Step 2: Install PySpark
+
+```bash
+pip install pyspark
+```
+
+---
+
+### Step 3: Start Spark Session
+
+```python
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder \
+    .appName("BDA_EDA_LAB") \
+    .getOrCreate()
+```
+
+---
+
+## 📂 **5. Dataset (students.csv)**
+
+Save the following as `students.csv`:
+
+```csv
+student_id,name,department,marks,attendance,gender
+1,Amit,IT,78,85,Male
+2,Neha,CS,88,92,Female
+3,Rahul,IT,45,70,Male
+4,Priya,EXTC,67,80,Female
+5,Ankit,CS,55,60,Male
+6,Sneha,IT,90,95,Female
+7,Rohit,EXTC,35,50,Male
+8,Kajal,CS,72,88,Female
+9,Arjun,IT,60,75,Male
+10,Meena,EXTC,82,90,Female
+11,Vikas,CS,49,65,Male
+12,Pooja,IT,91,96,Female
+13,Deepak,EXTC,38,55,Male
+14,Riya,CS,76,89,Female
+15,Karan,IT,84,93,Male
+```
+
+---
+
+## 📥 **6. Data Loading**
+
+```python
+df = spark.read.csv("students.csv", header=True, inferSchema=True)
+df.show()
+```
+
+---
+
+## 🔍 **7. Basic Exploration**
+
+```python
+df.printSchema()
+df.describe().show()
+print("Rows:", df.count())
+print("Columns:", len(df.columns))
+```
+
+---
+
+## 🧹 **8. Data Cleaning**
+
+```python
+df = df.na.fill(0)
+df = df.dropDuplicates()
+```
+
+---
+
+## 🔄 **9. Data Transformation**
+
+```python
+from pyspark.sql.functions import col
+
+df = df.withColumn("passed", col("marks") > 40)
+df.select("name", "marks", "passed").show()
+```
+
+---
+
+## 📊 **10. Aggregation**
+
+```python
+from pyspark.sql.functions import avg
+
+df.groupBy("department").agg(avg("marks")).show()
+```
+
+---
+
+## 📈 **11. Advanced Analysis**
+
+```python
+# Correlation
+df.stat.corr("marks", "attendance")
+
+# Sorting
+df.orderBy("marks", ascending=False).show()
+
+# Filtering
+df.filter(df.attendance < 75).show()
+```
+
+---
+
+## 📉 **12. Visualization**
+
+```python
+pdf = df.toPandas()
+
+import matplotlib.pyplot as plt
+pdf["marks"].hist()
+plt.title("Marks Distribution")
+plt.show()
+```
+
+---
+
+## ⏱️ **13. Benchmarking (Performance Measurement)**
+
+### 🔹 Why Benchmarking?
+
+To evaluate **execution time and scalability** of Spark operations.
+
+---
+
+### 🔹 Step 1: Import Time Module
+
+```python
+import time
+```
+
+---
+
+### 🔹 Step 2: Measure Execution Time
+
+```python
+start = time.time()
+
+df.groupBy("department").count().show()
+
+end = time.time()
+
+print("Execution Time:", end - start, "seconds")
+```
+
+---
+
+### 🔹 Step 3: Compare Operations
+
+```python
+# Action 1
+start = time.time()
+df.count()
+print("Count Time:", time.time() - start)
+
+# Action 2
+start = time.time()
+df.collect()
+print("Collect Time:", time.time() - start)
+```
+
+---
+
+### 🔹 Step 4: Caching Optimization
+
+```python
+df.cache()
+
+start = time.time()
+df.count()
+print("Cached Count Time:", time.time() - start)
+```
+
+---
+
+## 📊 **14. Sample Benchmark Output (Expected)**
+
+| Operation      | Time (seconds) |
+| -------------- | -------------- |
+| count()        | 0.5            |
+| collect()      | 1.2            |
+| groupBy()      | 0.8            |
+| cached count() | 0.2            |
+
+> ⚠️ Note: Values vary based on system configuration.
+
+---
+
+## 🧪 **15. Tasks for Students**
+
+1. Find top 5 students by marks
+2. Find average marks per department
+3. Identify students with attendance < 75%
+4. Add grade column (A, B, C)
+5. Perform correlation analysis
+6. Compare execution time before and after caching
+
+---
+
+## 🚀 **16. Mini Project**
+
+### Title:
+
+**Student Performance Analytics using PySpark**
+
+### Tasks:
+
+* Load large dataset
+* Perform EDA
+* Generate insights
+* Visualize results
+* Benchmark performance
+
+---
+
+## 📝 **17. Evaluation Rubric**
+
+| Criteria       | Marks  |
+| -------------- | ------ |
+| Data Loading   | 10     |
+| Cleaning       | 10     |
+| Transformation | 10     |
+| Analysis       | 20     |
+| Visualization  | 10     |
+| Benchmarking   | 10     |
+| Viva           | 10     |
+| **Total**      | **80** |
+
+---
+
+## ❓ **18. Viva Questions**
+
+1. What is PySpark?
+2. What is lazy evaluation?
+3. Difference between transformation and action?
+4. What is caching in Spark?
+5. Why is Spark faster than Hadoop?
+
+---
+
+## 📌 **19. Conclusion**
+
+PySpark enables efficient large-scale EDA using distributed computing. Benchmarking helps optimize performance and understand system efficiency.
+
+---
+
+## 📎 **20. Submission Instructions**
+
+Submit:
+
+* `.ipynb` / `.py` file
+* Output screenshots
+* Benchmark table
+* Short report (PDF)
+
+---
+
+# ✅ **End of Experiment**
